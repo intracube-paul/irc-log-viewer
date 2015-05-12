@@ -214,51 +214,39 @@ $file = $logdir."LOG_".$year."-".sprintf("%02s", $month)."-".sprintf("%02s", $da
 echo "Current Server Time: ".date("H:i")." (Central Europe)";
 
 if ($showoverview) {
-	echo "<h1>IRC Channel Logs</h1>";
-	echo "<h2>#apertus@irc.freenode.net</h2>";
-	echo "<h5>latest month listed first</h5>";
-	$month_index = 0;
-	
-	// for every month
-	// debug
-	// problem 
-	//echo strtotime($date. " 12:00")."<br />";
-	//echo "current month: ".date("F", strtotime($date_month))."<br />";
-	//echo "-0 month(".strtotime("-0 month") . "): ".date("F", strtotime($date_month."-0 month"))."<br />";
-	//echo "-1 month(".strtotime("-1 month") . "): ".date("F", strtotime($date_month."-1 month"))."<br />";
-	//echo "-2 months(".strtotime("-2 months") . "): ".date("F", strtotime($date_month."-2 months"))."<br />";
-	 
-	//echo strtotime($date ." 23:59:59 -".$month_index." month")-1 ."<br />";
-	//echo date('m', strtotime($date. " 23:59:59 -".$month_index." month")-1);
-	
-	while(is_dir($logdir)) {
-		$read_month = date('m', strtotime($date_month." -".$month_index." month"));
-		$read_year = date('Y', strtotime($date_month." -".$month_index." month"));
-		$logdir = "LOG/".$read_year."-".$read_month."/";
-		
-		if (is_dir($logdir)) {
-			echo "<div class=\"monthoverview\"><h3>".date("F", strtotime($date_month." -".$month_index." month")).", ".date("Y", strtotime($date_month." -".$month_index." month"))."</h3>";
-			if ($dh = opendir($logdir)) {
-				$files = scandir($logdir);
-				foreach($files as $file) {
-					if ($file != "." && $file != "..") {
-						$file_date = filenamedate($file);
-						$file_size = round(filesize($logdir.$file)/1024,2);
-						$filename = $file_date['day']."<sup>".date("S", mktime(0, 0, 0, $file_date['month'], $file_date['day'], $file_date['year']))."</sup> (".
-						date("l", mktime(0, 0, 0, $file_date['month'], $file_date['day'], $file_date['year'])).") - ".$file_size." KB";
-						echo "<a class=\"loglink\" href=\"index.php?day=".$file_date['day']."&month=".$file_date['month']."&year=".$file_date['year']."\">".$filename."</a><br />";
-					}
-				}
-				closedir($dh);
-			}
-			echo "</div>";
-		}
-		$month_index++;
-		if ($month_index > 80) {
-			exit();
-		}
-	}
+    echo "<h1>IRC Channel Logs</h1>" . PHP_EOL;
+    echo "<h2>#apertus@irc.freenode.net</h2>" . PHP_EOL;
+    echo "<h5>latest month listed first</h5>" . PHP_EOL;
+
+    $logdir_count = 0;
+
+    if(is_dir($logroot)) {
+        // scan root log directory and sort descending
+        $logdirs = array_reverse(scandir($logroot));
+        foreach ($logdirs as $dir) {
+            // exclude . and .. dirs
+            if ($logdir_count < 80 && $dir != "." && $dir != "..") {
+                // check log directories are in 'YYYY-MM' format or else ignore
+                if (preg_match('/[0-9][0-9][0-9][0-9]-[0-1][0-9]/', $dir)) {
+                    echo "<div class=\"monthoverview\"><h3>" . date('F, Y', strtotime($dir)) . "</h3>" . PHP_EOL;
+                    // scan files in each month dir and sort descending
+                    $listing = array_reverse(scandir($logroot.'/'.$dir));
+                    foreach ($listing as $file) {
+                        if ($file != "." && $file != "..") {
+                            // check log files are in 'LOG_YYYY-MM-DD.txt' format or else ignore
+                            if (preg_match('/^LOG_[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9](.txt)/', $file)) {
+                                logLink($logroot, $dir, $file);
+                            }
+                        }
+                    }
+                    echo "</div>" . PHP_EOL;
+                }
+                $logdir_count++;
+            }
+        }
+    }
 } else {
+
 ?>
 <h1>#apertus IRC Channel Logs</h1>
 <h2><?php echo $year."/".$month."/".$day; ?></h2>
