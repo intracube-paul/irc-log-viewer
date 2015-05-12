@@ -1,6 +1,4 @@
 <?php
-
-echo "<!-- Server time returned by date(): " . date('c') . "-->";
 /**
  * apertus° IRC log viewer
  * 
@@ -27,6 +25,7 @@ ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
 
+echo "<!-- Server time returned by date(): " . date('c') . "-->";
 
 function utcDateTime() {
     // substitute for date() function. returns shifted time by $time_offset amount
