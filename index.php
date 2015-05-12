@@ -202,6 +202,7 @@ if (!is_numeric($year)) {
 
 <?php
 $logdir = "LOG/".$year."-".$month."/";
+$logroot = "LOG";
 $date = $year."-".$month."-".$day;
 $date_month = $year."-".$month."-1";
 $file = $logdir."LOG_".$year."-".sprintf("%02s", $month)."-".sprintf("%02s", $day).".txt";
