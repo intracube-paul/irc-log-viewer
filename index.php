@@ -1,4 +1,6 @@
-﻿<?php
+<?php
+
+echo "<!-- Server time returned by date(): " . date('c') . "-->";
 /**
  * apertus° IRC log viewer
  * 
@@ -19,11 +21,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
- 
- 
+
+
 ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
+
 
 function utcDateTime() {
     // substitute for date() function. returns shifted time by $time_offset amount
@@ -44,43 +47,43 @@ function logLink($logroot, $dir, $file) {
     $y = date('Y', strtotime(substr($file, 4, -4)));
     
     echo "<a class=\"loglink\" href=\"index.php?day=".$d."&month=".$m."&year=".$y."\">".date('l, d\<\s\u\p\>S\<\/\s\u\p\> - ', strtotime(substr($file, 4, -4))).round(filesize($fullpath) / 1024, 2) . ' kB</a><br>' . PHP_EOL;
+    
 }
 
-
 function message ($arrayvalue) {
-	$arrayvalue[0] = "";
-	$arrayvalue[1] = "";
-	$arrayvalue[2] = "";
-	$arrayvalue[3] = "";
-	$temp = implode (" ", $arrayvalue);
-	return $temp;
+        $arrayvalue[0] = "";
+        $arrayvalue[1] = "";
+        $arrayvalue[2] = "";
+        $arrayvalue[3] = "";
+        $temp = implode (" ", $arrayvalue);
+        return $temp;
 }
 
 function colorhash ($nick, $colornicks) {
-	$temp = "";
-	$test = "";
-	// is the nick in the list of predefined colors?
-	if (array_key_exists($nick, $colornicks)) {
-		return $colornicks[$nick];
-	} else {
-		// if the nick is not in the list take first 3 letters of nick and apply some magic to generate a color
-		for($i = 0; $i <= 2; $i++) {
-			$temp .= ord(substr(strtoupper(md5($nick)), $i, 1))-48;
-			// 0 = 48
-			// Z = 90
-			$test .= ord(substr(strtoupper(md5($nick)), $i, 1))-48;
-		}
-		//return round((($temp / 126) * 255));
-		return $temp;
-	}
+        $temp = "";
+        $test = "";
+        // is the nick in the list of predefined colors?
+        if (array_key_exists($nick, $colornicks)) {
+                return $colornicks[$nick];
+        } else {
+                // if the nick is not in the list take first 3 letters of nick and apply some magic to generate a color
+                for($i = 0; $i <= 2; $i++) {
+                        $temp .= ord(substr(strtoupper(md5($nick)), $i, 1))-48;
+                        // 0 = 48
+                        // Z = 90
+                        $test .= ord(substr(strtoupper(md5($nick)), $i, 1))-48;
+                }
+                //return round((($temp / 126) * 255));
+                return $temp;
+        }
 }
 function filenamedate($input) {
-	// format: logs/2013-06/LOG_2013-06-23.txt
-	preg_match_all("'LOG_([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]).txt'", $input, $logdate);
-	$logdate1['day'] = $logdate[3][0];
-	$logdate1['month'] = $logdate[2][0];
-	$logdate1['year'] = $logdate[1][0];
-	return $logdate1;
+        // format: logs/2013-06/LOG_2013-06-23.txt
+        preg_match_all("'LOG_([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]).txt'", $input, $logdate);
+        $logdate1['day'] = $logdate[3][0];
+        $logdate1['month'] = $logdate[2][0];
+        $logdate1['year'] = $logdate[1][0];
+        return $logdate1;
 }
 
 //Load colors for nicknames
@@ -88,131 +91,126 @@ require ("nicks.php");
 
 $showoverview = false;
 if ((!isset($_GET['day'])) || (!isset($_GET['month'])) || (!isset($_GET['year']))) {
-	$showoverview = true;
+        $showoverview = true;
 }
 $day = null;
 if (isset($_GET['day']))
-	$day = $_GET['day'];
+        $day = $_GET['day'];
 if (!is_numeric($day)) { 
-	$day = date('d');
-	$month = date('m');
-	$year = date('Y');
+        $day = utcDateTime('d');
+        $month = utcDateTime('m');
+        $year = utcDateTime('Y');
 }
 
 $month = null;
 if (isset($_GET['month']))
-	$month = $_GET['month'];
+        $month = $_GET['month'];
 if (!is_numeric($month)) { 
-	$day = date('d');
-	$month = date('m');
-	$year = date('Y');
+        $day = utcDateTime('d');
+        $month = utcDateTime('m');
+        $year = utcDateTime('Y');
 }
 
 $year = null;
 if (isset($_GET['year']))
-	$year = $_GET['year'];
+        $year = $_GET['year'];
 if (!is_numeric($year)) { 
-	$day = date('d');
-	$month = date('m');
-	$year = date('Y');
+        $day = utcDateTime('d');
+        $month = utcDateTime('m');
+        $year = utcDateTime('Y');
 }
+
 ?>
+
 <head>
 <title>apertus&deg; IRC logs</title>
 <style>
-	@font-face {
-		font-family: 'Droid Sans Mono';
-		font-style: normal;
-		font-weight: 400;
-		src: local('Droid Sans Mono'), url(droidsansmono.woff) format('woff');
-	}
-	body {
-		line-height:120%;
-		background-color:#f5f5f5;
-		background: url("https://www.apertus.org/sites/all/themes/apertus_bootstrap/images/grain-eee.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
-		font-family: 'Droid Sans Mono', courier;
-		font-size:0.9em;
-	}
-	a.loglink {	
-		color:#222a44;
-	}
-	.nick { 
-		font-weight:bold;
-		text-align:right;
-		padding-right:5px;
-	}
-	.content {
-		padding-left:7px;
-		border-left:1px solid #999;
-	}
-	.quit {
-		color:#888 !important;
-	}
-	.join {
-		color:#888 !important;
-	}
-	.nickchange {
-		color:#888 !important;
-	}
-	.line-index {
-		color:#AAA;
-		font-size:0.7em;
-	}
-	.line-index a{
-		color:#AAA;
-	}
-	hr {
-		border-bottom: 1px solid #DDDDDD;
-		border-top:none;
-		border-left:none;
-		border-right:none;
-		margin-bottom: 1em;
-		clear:both;
-	}
-	td.irclog  {
-		padding-left:15px;
-		margin-top:1px;
-		margin-bottom:1px;
-	}
-	table.irclog {
-		font-size:0.9em;
-	}
-	.even {
-		background-color: rgba(0, 0, 0, 0.06);
-	}
-	.odd {
-		background-color: rgba(0, 0, 0, 0.02);
-	}
-	form {
-		display:inline;
-		padding:0;
-		margin:0;
-		clear:none;
-	}
-	.monthoverview {
-		vertical-align: top;
-		display:inline-block;
-		padding-right:50px;
-		padding-bottom:100px;
-	}
+        @font-face {
+                font-family: 'Droid Sans Mono';
+                font-style: normal;
+                font-weight: 400;
+                src: local('Droid Sans Mono'), url(droidsansmono.woff) format('woff');
+        }
+        body {
+                line-height:120%;
+                background-color:#f5f5f5;
+                background: url("https://www.apertus.org/sites/all/themes/apertus_bootstrap/images/grain-eee.png") repeat scroll 0 0 rgba(0, 0, 0, 0);
+                font-family: 'Droid Sans Mono', courier;
+                font-size:0.9em;
+        }
+        a.loglink {     
+                color:#222a44;
+        }
+        .nick { 
+                font-weight:bold;
+                text-align:right;
+                padding-right:5px;
+        }
+        .content {
+                padding-left:7px;
+                border-left:1px solid #999;
+        }
+        .quit {
+                color:#888 !important;
+        }
+        .join {
+                color:#888 !important;
+        }
+        .nickchange {
+                color:#888 !important;
+        }
+        .line-index {
+                color:#AAA;
+                font-size:0.7em;
+        }
+        .line-index a{
+                color:#AAA;
+        }
+        hr {
+                border-bottom: 1px solid #DDDDDD;
+                border-top:none;
+                border-left:none;
+                border-right:none;
+                margin-bottom: 1em;
+                clear:both;
+        }
+        td.irclog  {
+                padding-left:15px;
+                margin-top:1px;
+                margin-bottom:1px;
+        }
+        table.irclog {
+                font-size:0.9em;
+        }
+        .even {
+                background-color: rgba(0, 0, 0, 0.06);
+        }
+        .odd {
+                background-color: rgba(0, 0, 0, 0.02);
+        }
+        form {
+                display:inline;
+                padding:0;
+                margin:0;
+                clear:none;
+        }
+        .monthoverview {
+                vertical-align: top;
+                display:inline-block;
+                padding-right:50px;
+                padding-bottom:100px;
+        }
 </style>
 <meta http-equiv="refresh" content="300">
 </head>
 <body>
 
 <?php
-$logdir = "LOG/".$year."-".$month."/";
-$logroot = "LOG";
 $date = $year."-".$month."-".$day;
-$date_month = $year."-".$month."-1";
-$file = $logdir."LOG_".$year."-".sprintf("%02s", $month)."-".sprintf("%02s", $day).".txt";
+$logroot = "LOG";
+$file = $logroot."/".$year."-".$month."/"."LOG_".$year."-".sprintf("%02s", $month)."-".sprintf("%02s", $day).".txt";
 
-// set timezone:
-//echo phpversion();
-//date_default_timezone_set("Europe/Berlin");
-
-// Display all days that have logs available
-echo "Current Server Time: ".date("H:i")." (Central Europe)";
+echo "Current Time: ".utcDateTime('H:i') . ' (UTC)<br>' . PHP_EOL;
 
 if ($showoverview) {
     echo "<h1>IRC Channel Logs</h1>" . PHP_EOL;
@@ -231,7 +229,7 @@ if ($showoverview) {
                 if (preg_match('/[0-9][0-9][0-9][0-9]-[0-1][0-9]/', $dir)) {
                     echo "<div class=\"monthoverview\"><h3>" . date('F, Y', strtotime($dir)) . "</h3>" . PHP_EOL;
                     // scan files in each month dir and sort descending
-                    $listing = array_reverse(scandir($logroot.'/'.$dir));
+                    $listing = scandir($logroot.'/'.$dir);
                     foreach ($listing as $file) {
                         if ($file != "." && $file != "..") {
                             // check log files are in 'LOG_YYYY-MM-DD.txt' format or else ignore
