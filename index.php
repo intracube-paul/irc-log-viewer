@@ -25,6 +25,27 @@ ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
 
+function utcDateTime() {
+    // substitute for date() function. returns shifted time by $time_offset amount
+    $args = func_get_args();
+    $time_offset = '-0 hours';
+    if(!isset($args[1])) {
+        $args[1] = time();
+    }
+    return date($args[0], strtotime($time_offset, $args[1]));
+}
+
+function logLink($logroot, $dir, $file) {
+    // returns formatted <a class="loglink" href="index.php?day= ...> line
+    $fullpath = $logroot.'/'.$dir.'/'.$file;
+    $file_size = round(filesize($fullpath) / 1024, 2);
+    $d = date('d', strtotime(substr($file, 4, -4)));
+    $m = date('m', strtotime(substr($file, 4, -4)));
+    $y = date('Y', strtotime(substr($file, 4, -4)));
+    
+    echo "<a class=\"loglink\" href=\"index.php?day=".$d."&month=".$m."&year=".$y."\">".date('l, d\<\s\u\p\>S\<\/\s\u\p\> - ', strtotime(substr($file, 4, -4))).round(filesize($fullpath) / 1024, 2) . ' kB</a><br>' . PHP_EOL;
+}
+
 
 function message ($arrayvalue) {
 	$arrayvalue[0] = "";
