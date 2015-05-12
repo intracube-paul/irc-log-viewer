@@ -254,186 +254,185 @@ if ($showoverview) {
 <h3>Timezone: UTC</h3>
 
 <?php 
-$day_now = date('d');
-$month_now = date('m');
-$year_now = date('Y');
-$daym1 = date('d', strtotime($date .' -1 day'));
-$monthm1 = date('m', strtotime($date .' -1 day'));
-$yearm1 = date('Y', strtotime($date .' -1 day'));
-$dayp1 = date('d', strtotime($date .' +1 day'));
-$monthp1 = date('m', strtotime($date .' +1 day'));
-$yearp1 = date('Y', strtotime($date .' +1 day'));
+$day_now = utcDateTime('d');
+$month_now = utcDateTime('m');
+$year_now = utcDateTime('Y');
+$daylast = utcDateTime('d', strtotime($date .' -1 day'));
+$monthlast = utcDateTime('m', strtotime($date .' -1 day'));
+$yearlast = utcDateTime('Y', strtotime($date .' -1 day'));
+$daynext = utcDateTime('d', strtotime($date .' +1 day'));
+$monthnext = utcDateTime('m', strtotime($date .' +1 day'));
+$yearnext = utcDateTime('Y', strtotime($date .' +1 day'));
 echo "<form style=\"float:left;\" action=\"index.php\" method=\"get\">
-	<input type=\"hidden\" name=\"day\" value=\"".$daym1."\" />
-	<input type=\"hidden\" name=\"month\" value=\"".$monthm1."\" />
-	<input type=\"hidden\" name=\"year\" value=\"".$yearm1."\" />
-	<input type=\"submit\" value=\"&larr; Previous Day\" />
-</form>";
+        <input type=\"hidden\" name=\"day\" value=\"".$daylast."\" />
+        <input type=\"hidden\" name=\"month\" value=\"".$monthlast."\" />
+        <input type=\"hidden\" name=\"year\" value=\"".$yearlast."\" />
+        <input type=\"submit\" value=\"&larr; Previous Day\" />
+</form>" . PHP_EOL;
 
 echo "<form style=\"float:right;\" action=\"index.php\" method=\"get\">
-	<input type=\"hidden\" name=\"day\" value=\"".$dayp1."\" />
-	<input type=\"hidden\" name=\"month\" value=\"".$monthp1."\" />
-	<input type=\"hidden\" name=\"year\" value=\"".$yearp1."\" />
-	<input type=\"submit\" value=\"Next Day &rarr;\" />
-</form>";
+        <input type=\"hidden\" name=\"day\" value=\"".$daynext."\" />
+        <input type=\"hidden\" name=\"month\" value=\"".$monthnext."\" />
+        <input type=\"hidden\" name=\"year\" value=\"".$yearnext."\" />
+        <input type=\"submit\" value=\"Next Day &rarr;\" />
+</form>" . PHP_EOL;
 ?>
 <div style="margin:auto; width:200px; text-align:center;">
-	<form action="index.php" ><input type="submit" value="Day Selection"></form>
-	<form action="index.php" >
-		<?php
-			echo "<input type=\"hidden\" name=\"day\" value=\"".$day_now."\" />
-			<input type=\"hidden\" name=\"month\" value=\"".$month_now."\" />
-			<input type=\"hidden\" name=\"year\" value=\"".$year_now."\" />";
-		?>
-		<input type="submit" value="Today">
-	</form>
+        <form action="index.php" ><input type="submit" value="Day Selection"></form>
+        <form action="index.php" >
+                <?php
+                        echo "<input type=\"hidden\" name=\"day\" value=\"".$day_now."\" />
+                        <input type=\"hidden\" name=\"month\" value=\"".$month_now."\" />
+                        <input type=\"hidden\" name=\"year\" value=\"".$year_now."\" />";
+                ?>
+                <input type="submit" value="Today">
+        </form>
 </div>
 <hr />
 <table class="irclog" cellpadding="0" cellspacing="0">
-<?
+<?php
 $line_index = 1;
 if (!file_exists($file)) {
-	exit ("file not found");
+        exit ("file not found");
 }
 $handle = fopen($file, "r");
 if ($handle) {
-	while (($line = fgets($handle)) !== false) {	
-		$tags = explode(" ", $line);
-		$timestamp = $tags[0];
-		$tag = $tags[1];
-		$nick = $tags[3];
-		$message = $tags[4];
-		
-		switch ($tag) {
-			case "M": echo "<tr class=\"message";
-			break;
-			
-			case "P": echo "<tr class=\"quit";
-			break;
-			
-			case "Q": echo "<tr class=\"quit";
-			break;
-			
-			case "N": echo "<tr class=\"nickchange";
-			break;
-			
-			case "J": echo "<tr class=\"join";
-			break;
-			
-			case "T": echo "<tr class=\"topic";
-			break;
-		}
-		
-		// Even/Odd Rows
-		if (($tag == "M") || ($tag == "P") || ($tag == "Q") || ($tag == "N") || ($tag == "J") || ($tag == "T")) {
-			if ($line_index %2) {
-				echo " even\">";
-			} else {
-				echo " odd\">";
-			}
-		}
-		
-		// Line Index
-		echo "<td class=\"irclog\"><div class=\"line-index\"><a href=\"#".$line_index."\" name=\"".$line_index."\">".$line_index++."</a></div></td>";
+        while (($line = fgets($handle)) !== false) {    
+                $tags = explode(" ", $line);
+                $timestamp = $tags[0];
+                $tag = $tags[1];
+                $nick = $tags[3];
+                $message = $tags[4];
+                
+                switch ($tag) {
+                        case "M": echo "<tr class=\"message";
+                        break;
+                        
+                        case "P": echo "<tr class=\"quit";
+                        break;
+                        
+                        case "Q": echo "<tr class=\"quit";
+                        break;
+                        
+                        case "N": echo "<tr class=\"nickchange";
+                        break;
+                        
+                        case "J": echo "<tr class=\"join";
+                        break;
+                        
+                        case "T": echo "<tr class=\"topic";
+                        break;
+                }
+                
+                // Even/Odd Rows
+                if (($tag == "M") || ($tag == "P") || ($tag == "Q") || ($tag == "N") || ($tag == "J") || ($tag == "T")) {
+                        if ($line_index %2) {
+                                echo " even\">";
+                        } else {
+                                echo " odd\">";
+                        }
+                }
+                
+                // Line Index
+                echo "<td class=\"irclog\"><div class=\"line-index\"><a href=\"#".$line_index."\" name=\"".$line_index."\">".$line_index++."</a></div></td>";
 
-		// Timestamp
-		switch ($tag) {
-			case "A":
-			case "M": 
-				echo "<td class=\"irclog\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"date\">".date("H:i", $timestamp - date("Z"))."</div></td>";
-				break;
-			
-			default: echo "<td class=\"irclog\"><div class=\"date\">".date("H:i", $timestamp - date("Z"))."</div></td>";
-			break;
-		}
-		
-		// Nick
-		$nicksettopic = false;
-		if ($nick == "*") {
-			$nick = "Topic";
-		} else {
-			$nicksettopic = true;
-		}
-		switch ($tag) {
-			case "M": echo "<td class=\"irclog nick\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"nick\">".htmlentities($nick, ENT_QUOTES)."</div></td>";
-			break;
-			
-			case "A": echo "<td class=\"irclog nick\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"nick\">".htmlentities($nick, ENT_QUOTES)."</div></td>";
-			break;
-			
-			default: echo "<td class=\"irclog nick\"><div class=\"nick\">".htmlentities($nick, ENT_QUOTES)."</div></td>";
-			break;
-		}
-		
-		//Message
-		switch ($tag) {
-			case "M": echo "<td><div class=\"content\" style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\">".htmlentities(message($tags), ENT_QUOTES);
-			break;
-			
-			case "P": echo "<td><div class=\"content\"> left the channel";
-			break;
-			
-			case "Q": echo "<td><div class=\"content\"> left the channel";
-			break;
-			
-			case "T": 
-				if ($nicksettopic) {
-					echo "<td><div class=\"content\"> has set the topic";
-				} else {
-					echo "<td><div class=\"content\"> ".htmlentities(message($tags), ENT_QUOTES);
-				}
-				break;
-			
-			case "N": echo "<td><div class=\"content\"> changed nick to: ".htmlentities(message($tags), ENT_QUOTES);
-			break;
-			
-			case "A": echo "<td><div class=\"content\" style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\"><i>".htmlentities(message($tags), ENT_QUOTES)."</i>";
-			break;
-			
-			case "J": echo "<td><div class=\"content\"> joined the channel";
-			break;
-		}
-		// debug
-		//echo "<br /><br />".$line;
-		
-		echo "</div></td></div></div></tr>";
-		
-		
-		 
-	}
+                // Timestamp
+                switch ($tag) {
+                        case "A":
+                        case "M": 
+                                echo "<td class=\"irclog\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"date\">".utcDateTime("H:i", $timestamp - utcDateTime("Z"))."</div></td>";
+                                break;
+                        
+                        default: echo "<td class=\"irclog\"><div class=\"date\">".utcDateTime("H:i", $timestamp - utcDateTime("Z"))."</div></td>";
+                        break;
+                }
+                
+                // Nick
+                $nicksettopic = false;
+                if ($nick == "*") {
+                        $nick = "Topic";
+                } else {
+                        $nicksettopic = true;
+                }
+                switch ($tag) {
+                        case "M": echo "<td class=\"irclog nick\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"nick\">".htmlentities($nick, ENT_QUOTES)."</div></td>";
+                        break;
+                        
+                        case "A": echo "<td class=\"irclog nick\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"nick\">".htmlentities($nick, ENT_QUOTES)."</div></td>";
+                        break;
+                        
+                        default: echo "<td class=\"irclog nick\"><div class=\"nick\">".htmlentities($nick, ENT_QUOTES)."</div></td>";
+                        break;
+                }
+                
+                //Message
+                switch ($tag) {
+                        case "M": echo "<td><div class=\"content\" style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\">".htmlentities(message($tags), ENT_QUOTES);
+                        break;
+                        
+                        case "P": echo "<td><div class=\"content\"> left the channel";
+                        break;
+                        
+                        case "Q": echo "<td><div class=\"content\"> left the channel";
+                        break;
+                        
+                        case "T": 
+                                if ($nicksettopic) {
+                                        echo "<td><div class=\"content\"> has set the topic";
+                                } else {
+                                        echo "<td><div class=\"content\"> ".htmlentities(message($tags), ENT_QUOTES);
+                                }
+                                break;
+                        
+                        case "N": echo "<td><div class=\"content\"> changed nick to: ".htmlentities(message($tags), ENT_QUOTES);
+                        break;
+                        
+                        case "A": echo "<td><div class=\"content\" style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\"><i>".htmlentities(message($tags), ENT_QUOTES)."</i>";
+                        break;
+                        
+                        case "J": echo "<td><div class=\"content\"> joined the channel";
+                        break;
+                }
+                // debug
+                //echo "<br /><br />".$line;
+                
+                echo "</div></td></tr>" . PHP_EOL;
+                
+                
+                 
+        }
 } else {
-	// error opening the file.
+        // error opening the file.
 }
 echo "</table><br />";
 
 echo "<form style=\"float:left;\" action=\"index.php\" method=\"get\">
-	<input type=\"hidden\" name=\"day\" value=\"".$daym1."\" />
-	<input type=\"hidden\" name=\"month\" value=\"".$monthm1."\" />
-	<input type=\"hidden\" name=\"year\" value=\"".$yearm1."\" />
-	<input type=\"submit\" value=\"&larr; Previous Day\" />
+        <input type=\"hidden\" name=\"day\" value=\"".$daylast."\" />
+        <input type=\"hidden\" name=\"month\" value=\"".$monthlast."\" />
+        <input type=\"hidden\" name=\"year\" value=\"".$yearlast."\" />
+        <input type=\"submit\" value=\"&larr; Previous Day\" />
 </form>";
 
 echo "<form style=\"float:right;\" action=\"index.php\" method=\"get\">
-	<input type=\"hidden\" name=\"day\" value=\"".$dayp1."\" />
-	<input type=\"hidden\" name=\"month\" value=\"".$monthp1."\" />
-	<input type=\"hidden\" name=\"year\" value=\"".$yearp1."\" />
-	<input type=\"submit\" value=\"Next Day &rarr;\" />
+        <input type=\"hidden\" name=\"day\" value=\"".$daynext."\" />
+        <input type=\"hidden\" name=\"month\" value=\"".$monthnext."\" />
+        <input type=\"hidden\" name=\"year\" value=\"".$yearnext."\" />
+        <input type=\"submit\" value=\"Next Day &rarr;\" />
 </form>";
 ?>
 <div style="margin:auto; width:200px; text-align:center;">
-	<form action="index.php" ><input type="submit" value="Day Selection"></form>
-	<form action="index.php" >
-		<?php
-			echo "<input type=\"hidden\" name=\"day\" value=\"".$day_now."\" />
-			<input type=\"hidden\" name=\"month\" value=\"".$month_now."\" />
-			<input type=\"hidden\" name=\"year\" value=\"".$year_now."\" />";
-		?>
-		<input type="submit" value="Today">
-	</form>
+        <form action="index.php" ><input type="submit" value="Day Selection"></form>
+        <form action="index.php" >
+                <?php
+                        echo "<input type=\"hidden\" name=\"day\" value=\"".$day_now."\" />
+                        <input type=\"hidden\" name=\"month\" value=\"".$month_now."\" />
+                        <input type=\"hidden\" name=\"year\" value=\"".$year_now."\" />";
+                ?>
+                <input type="submit" value="Today">
+        </form>
 </div>
 <br />
 <?php
 }
 ?>
 </body>
-
