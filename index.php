@@ -207,7 +207,7 @@ if (!is_numeric($year)) {
 <?php
 $date = $year."-".$month."-".$day;
 $logroot = "LOG";
-$file = $logroot."/".$year."-".$month."/"."LOG_".$year."-".sprintf("%02s", $month)."-".sprintf("%02s", $day).".txt";
+$filename = $logroot."/".$year."-".$month."/"."LOG_".$year."-".sprintf("%02s", $month)."-".sprintf("%02s", $day).".txt";
 
 echo "Current Time: ".utcDateTime('H:i') . ' (UTC)<br>' . PHP_EOL;
 
@@ -289,10 +289,10 @@ echo "<form style=\"float:right;\" action=\"index.php\" method=\"get\">
 <table class="irclog" cellpadding="0" cellspacing="0">
 <?php
 $line_index = 1;
-if (!file_exists($file)) {
+if (!file_exists($filename)) {
         exit ("file not found");
 }
-$handle = fopen($file, "r");
+$handle = fopen($filename, "r");
 if ($handle) {
         while (($line = fgets($handle)) !== false) {    
                 $tags = explode(" ", $line);
