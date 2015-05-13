@@ -227,7 +227,7 @@ if ($showoverview) {
                 // check log directories are in 'YYYY-MM' format or else ignore
                 if (preg_match('/[0-9][0-9][0-9][0-9]-[0-1][0-9]/', $dir)) {
                     echo "<div class=\"monthoverview\"><h3>" . date('F, Y', strtotime($dir)) . "</h3>" . PHP_EOL;
-                    // scan files in each month dir and sort descending
+                    // scan files in each month dir
                     $listing = scandir($logroot.'/'.$dir);
                     foreach ($listing as $file) {
                         if ($file != "." && $file != "..") {
