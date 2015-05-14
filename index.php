@@ -337,10 +337,10 @@ if ($handle) {
                 switch ($tag) {
                         case "A":
                         case "M": 
-                                echo "<td class=\"irclog\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"date\">".utcDateTime("H:i", $timestamp - utcDateTime("Z"))."</div></td>";
+                                echo "<td class=\"irclog\"><div style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\" class=\"date\">".date("H:i", $timestamp)."</div></td>";
                                 break;
                         
-                        default: echo "<td class=\"irclog\"><div class=\"date\">".utcDateTime("H:i", $timestamp - utcDateTime("Z"))."</div></td>";
+                        default: echo "<td class=\"irclog\"><div class=\"date\">".date("H:i", $timestamp)."</div></td>";
                         break;
                 }
                 
