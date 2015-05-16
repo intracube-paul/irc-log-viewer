@@ -54,6 +54,28 @@ function message ($arrayvalue) {
         $arrayvalue[1] = "";
         $arrayvalue[2] = "";
         $arrayvalue[3] = "";
+        
+        foreach ($arrayvalue as &$word) {
+            $word = htmlentities($word, ENT_QUOTES);
+            unset($word);
+        }
+        
+        foreach ($arrayvalue as &$word) {
+            if (preg_match('/https?:\/\/[^\s]+/', $word, $matches, PREG_OFFSET_CAPTURE)) {
+                // in case there isn't a space just before the http - separating it from the previous text, e.g : 'have a look here:http://www.bbc.co.uk/'
+                if($matches[0][1] != 0) {
+                    // separate the first characters from before the http string
+                    $link = substr($word, $matches[0][1]);
+                    $word = substr($word, 0, $matches[0][1]) . ' ' . '<a href="' . $link . '">' . $link . '</a>';
+                    
+                } else {
+                    $link = $word;
+                    $word = '<a href="' . $link . '">' . $link . '</a>';
+                }
+            }
+            unset($word);
+        }
+        
         $temp = implode (" ", $arrayvalue);
         return $temp;
 }
@@ -364,7 +386,7 @@ if ($handle) {
                 
                 //Message
                 switch ($tag) {
-                        case "M": echo "<td><div class=\"content\" style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\">".htmlentities(message($tags), ENT_QUOTES);
+                        case "M": echo "<td><div class=\"content\" style=\"color: hsl(".colorhash($nick, $colornicks).", 100%, 30%);\">".message($tags);
                         break;
                         
                         case "P": echo "<td><div class=\"content\"> left the channel";
